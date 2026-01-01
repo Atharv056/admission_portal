@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, ChevronLeft, ChevronRight, Check, Upload } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
+import { personalInfoSchema, academicInfoSchema, courseInfoSchema } from "@/lib/validations";
 
 type DocumentType = Database['public']['Enums']['document_type'];
 
@@ -39,6 +40,7 @@ const Register = () => {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   
   // Personal Info
   const [personalInfo, setPersonalInfo] = useState({
@@ -167,13 +169,14 @@ const Register = () => {
               .upload(fileName, doc.file);
 
             if (!uploadError) {
-              const { data: urlData } = supabase.storage.from("documents").getPublicUrl(fileName);
+              // Store the file path instead of public URL for security
+              // Documents will be accessed via signed URLs when needed
               await supabase.from("documents").insert({
                 application_id: appId,
                 user_id: user.id,
                 document_type: doc.type,
                 file_name: doc.file.name,
-                file_url: urlData.publicUrl,
+                file_url: fileName, // Store path, not public URL
               });
             }
           }
@@ -207,8 +210,40 @@ const Register = () => {
     setDocuments(prev => prev.map(d => d.type === type ? { ...d, file } : d));
   };
 
+  const validateStep = (stepNum: number): boolean => {
+    setValidationErrors({});
+    
+    try {
+      if (stepNum === 1) {
+        personalInfoSchema.parse(personalInfo);
+      } else if (stepNum === 2) {
+        academicInfoSchema.parse(academicInfo);
+      } else if (stepNum === 3) {
+        courseInfoSchema.parse(courseInfo);
+      }
+      return true;
+    } catch (error: any) {
+      if (error.errors) {
+        const errors: Record<string, string> = {};
+        error.errors.forEach((err: any) => {
+          const path = err.path.join('.');
+          errors[path] = err.message;
+        });
+        setValidationErrors(errors);
+        toast({
+          variant: "destructive",
+          title: "Validation Error",
+          description: "Please fix the highlighted errors before proceeding.",
+        });
+      }
+      return false;
+    }
+  };
+
   const nextStep = () => {
-    if (step < 5) setStep(step + 1);
+    if (validateStep(step) && step < 5) {
+      setStep(step + 1);
+    }
   };
 
   const prevStep = () => {
@@ -276,18 +311,27 @@ const Register = () => {
                         value={personalInfo.fullName}
                         onChange={(e) => setPersonalInfo({ ...personalInfo, fullName: e.target.value })}
                         placeholder="Enter your full name"
+                        className={validationErrors.fullName ? "border-destructive" : ""}
                       />
+                      {validationErrors.fullName && (
+                        <p className="text-sm text-destructive">{validationErrors.fullName}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
-                      <Label>Phone Number *</Label>
+                      <Label>Phone Number (10 digits)</Label>
                       <Input
                         value={personalInfo.phone}
                         onChange={(e) => setPersonalInfo({ ...personalInfo, phone: e.target.value })}
                         placeholder="Enter phone number"
+                        maxLength={10}
+                        className={validationErrors.phone ? "border-destructive" : ""}
                       />
+                      {validationErrors.phone && (
+                        <p className="text-sm text-destructive">{validationErrors.phone}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
-                      <Label>Date of Birth *</Label>
+                      <Label>Date of Birth</Label>
                       <Input
                         type="date"
                         value={personalInfo.dateOfBirth}
@@ -295,7 +339,7 @@ const Register = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Gender *</Label>
+                      <Label>Gender</Label>
                       <Select value={personalInfo.gender} onValueChange={(v) => setPersonalInfo({ ...personalInfo, gender: v })}>
                         <SelectTrigger><SelectValue placeholder="Select gender" /></SelectTrigger>
                         <SelectContent>
@@ -332,12 +376,17 @@ const Register = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Pincode</Label>
+                      <Label>Pincode (6 digits)</Label>
                       <Input
                         value={personalInfo.pincode}
                         onChange={(e) => setPersonalInfo({ ...personalInfo, pincode: e.target.value })}
                         placeholder="Pincode"
+                        maxLength={6}
+                        className={validationErrors.pincode ? "border-destructive" : ""}
                       />
+                      {validationErrors.pincode && (
+                        <p className="text-sm text-destructive">{validationErrors.pincode}</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -365,22 +414,35 @@ const Register = () => {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Percentage</Label>
+                        <Label>Percentage (0-100)</Label>
                         <Input
                           type="number"
+                          min="0"
+                          max="100"
+                          step="0.01"
                           value={academicInfo.percentage10th}
                           onChange={(e) => setAcademicInfo({ ...academicInfo, percentage10th: e.target.value })}
                           placeholder="e.g., 85.5"
+                          className={validationErrors.percentage10th ? "border-destructive" : ""}
                         />
+                        {validationErrors.percentage10th && (
+                          <p className="text-sm text-destructive">{validationErrors.percentage10th}</p>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <Label>Year of Passing</Label>
                         <Input
                           type="number"
+                          min="1950"
+                          max={new Date().getFullYear() + 1}
                           value={academicInfo.year10th}
                           onChange={(e) => setAcademicInfo({ ...academicInfo, year10th: e.target.value })}
                           placeholder="e.g., 2022"
+                          className={validationErrors.year10th ? "border-destructive" : ""}
                         />
+                        {validationErrors.year10th && (
+                          <p className="text-sm text-destructive">{validationErrors.year10th}</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -406,22 +468,35 @@ const Register = () => {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Percentage</Label>
+                        <Label>Percentage (0-100)</Label>
                         <Input
                           type="number"
+                          min="0"
+                          max="100"
+                          step="0.01"
                           value={academicInfo.percentage12th}
                           onChange={(e) => setAcademicInfo({ ...academicInfo, percentage12th: e.target.value })}
                           placeholder="e.g., 90.0"
+                          className={validationErrors.percentage12th ? "border-destructive" : ""}
                         />
+                        {validationErrors.percentage12th && (
+                          <p className="text-sm text-destructive">{validationErrors.percentage12th}</p>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <Label>Year of Passing</Label>
                         <Input
                           type="number"
+                          min="1950"
+                          max={new Date().getFullYear() + 1}
                           value={academicInfo.year12th}
                           onChange={(e) => setAcademicInfo({ ...academicInfo, year12th: e.target.value })}
                           placeholder="e.g., 2024"
+                          className={validationErrors.year12th ? "border-destructive" : ""}
                         />
+                        {validationErrors.year12th && (
+                          <p className="text-sm text-destructive">{validationErrors.year12th}</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -440,11 +515,16 @@ const Register = () => {
                   <div className="space-y-2">
                     <Label>Course *</Label>
                     <Select value={courseInfo.courseName} onValueChange={(v) => setCourseInfo({ ...courseInfo, courseName: v })}>
-                      <SelectTrigger><SelectValue placeholder="Select course" /></SelectTrigger>
+                      <SelectTrigger className={validationErrors.courseName ? "border-destructive" : ""}>
+                        <SelectValue placeholder="Select course" />
+                      </SelectTrigger>
                       <SelectContent>
                         {courses.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                       </SelectContent>
                     </Select>
+                    {validationErrors.courseName && (
+                      <p className="text-sm text-destructive">{validationErrors.courseName}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label>Preferred College (Optional)</Label>
