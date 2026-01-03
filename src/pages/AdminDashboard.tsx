@@ -12,14 +12,16 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, Search, Eye, CheckCircle, XCircle, Clock, FileText, Download } from "lucide-react";
+import { Loader2, Search, Eye, CheckCircle, XCircle, Clock, FileText, Download, File, ExternalLink } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type ApplicationRow = Database['public']['Tables']['applications']['Row'];
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+type DocumentRow = Database['public']['Tables']['documents']['Row'];
 
 type Application = ApplicationRow & {
   profiles?: Pick<ProfileRow, 'full_name' | 'email' | 'phone'> | null;
+  documents?: DocumentRow[];
 };
 
 type ApplicationStatus = Database['public']['Enums']['application_status'];
@@ -89,18 +91,30 @@ const AdminDashboard = () => {
 
       // Fetch profiles for all user_ids
       const userIds = [...new Set(appsData?.map(a => a.user_id) || [])];
-      const { data: profilesData } = await supabase
-        .from("profiles")
-        .select("user_id, full_name, email, phone")
-        .in("user_id", userIds);
+      const appIds = appsData?.map(a => a.id) || [];
 
-      // Map profiles to applications
-      const appsWithProfiles = (appsData || []).map(app => ({
+      const [profilesResult, documentsResult] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("user_id, full_name, email, phone")
+          .in("user_id", userIds),
+        supabase
+          .from("documents")
+          .select("*")
+          .in("application_id", appIds)
+      ]);
+
+      const profilesData = profilesResult.data;
+      const documentsData = documentsResult.data;
+
+      // Map profiles and documents to applications
+      const appsWithData = (appsData || []).map(app => ({
         ...app,
-        profiles: profilesData?.find(p => p.user_id === app.user_id) || null
+        profiles: profilesData?.find(p => p.user_id === app.user_id) || null,
+        documents: documentsData?.filter(d => d.application_id === app.id) || []
       }));
 
-      setApplications(appsWithProfiles);
+      setApplications(appsWithData);
     } catch (error) {
       console.error("Error fetching applications:", error);
       toast({
@@ -110,6 +124,29 @@ const AdminDashboard = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const getDocumentUrl = async (filePath: string) => {
+    const { data, error } = await supabase.storage
+      .from("documents")
+      .createSignedUrl(filePath, 3600); // 1 hour expiry
+    
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to get document URL.",
+      });
+      return null;
+    }
+    return data.signedUrl;
+  };
+
+  const handleViewDocument = async (doc: DocumentRow) => {
+    const url = await getDocumentUrl(doc.file_url);
+    if (url) {
+      window.open(url, '_blank');
     }
   };
 
@@ -426,6 +463,40 @@ Generated on: ${new Date().toLocaleString()}
                       <p><span className="text-muted-foreground">Year:</span> {selectedApp.year_12th || 'N/A'}</p>
                     </div>
                   </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-2">Uploaded Documents</h4>
+                  {selectedApp.documents && selectedApp.documents.length > 0 ? (
+                    <div className="space-y-2">
+                      {selectedApp.documents.map((doc) => (
+                        <div
+                          key={doc.id}
+                          className="flex items-center justify-between p-3 border rounded-lg bg-muted/30"
+                        >
+                          <div className="flex items-center gap-2">
+                            <File className="h-4 w-4 text-muted-foreground" />
+                            <div>
+                              <p className="text-sm font-medium">{doc.file_name}</p>
+                              <p className="text-xs text-muted-foreground capitalize">
+                                {doc.document_type.replace(/_/g, ' ')}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleViewDocument(doc)}
+                          >
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No documents uploaded</p>
+                  )}
                 </div>
 
                 <div>
