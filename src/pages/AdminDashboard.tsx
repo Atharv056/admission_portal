@@ -159,6 +159,34 @@ const AdminDashboard = () => {
     }
   };
 
+  const sendStatusEmail = async (
+    app: Application,
+    status: ApplicationStatus,
+    admitCardNumber?: string
+  ) => {
+    try {
+      const { error } = await supabase.functions.invoke('send-status-email', {
+        body: {
+          studentEmail: app.profiles?.email,
+          studentName: app.profiles?.full_name || 'Student',
+          applicationNumber: app.application_number,
+          courseName: app.course_name,
+          status: status,
+          admitCardNumber: admitCardNumber,
+          remarks: remarks || null,
+        },
+      });
+
+      if (error) {
+        console.error("Error sending email:", error);
+      } else {
+        console.log("Status email sent successfully");
+      }
+    } catch (error) {
+      console.error("Failed to send status email:", error);
+    }
+  };
+
   const handleStatusUpdate = async (status: ApplicationStatus) => {
     if (!selectedApp) return;
     
@@ -174,6 +202,8 @@ const AdminDashboard = () => {
         .eq("id", selectedApp.id);
 
       if (error) throw error;
+
+      let admitCardNumber: string | undefined;
 
       // If approved, generate admit card
       if (status === 'approved') {
@@ -195,6 +225,7 @@ const AdminDashboard = () => {
             description: "Application approved but failed to generate admit card.",
           });
         } else {
+          admitCardNumber = admitCard.admit_card_number;
           toast({
             title: "Application Approved",
             description: `Admit card ${admitCard.admit_card_number} has been generated.`,
@@ -204,6 +235,15 @@ const AdminDashboard = () => {
         toast({
           title: "Status Updated",
           description: `Application ${selectedApp.application_number} has been ${status.replace('_', ' ')}.`,
+        });
+      }
+
+      // Send email notification
+      if (selectedApp.profiles?.email) {
+        await sendStatusEmail(selectedApp, status, admitCardNumber);
+        toast({
+          title: "Email Sent",
+          description: `Notification email sent to ${selectedApp.profiles.email}`,
         });
       }
 
