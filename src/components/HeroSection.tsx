@@ -35,7 +35,7 @@ export const HeroSection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 mb-12">
-            <Button size="lg" variant="secondary" className="" onClick={handleNewRegistration}>
+            <Button size="lg" variant="secondary" className="gap-2 shadow-lg hover:shado transition-all" onClick={handleNewRegistration}>
               <FileText className="h-5 w-5" />
               New Registration
               <ArrowRight className="h-4 w-4" />
