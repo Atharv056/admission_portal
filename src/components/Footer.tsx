@@ -1,8 +1,6 @@
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Youtube } from "lucide-react";
-
 export const Footer = () => {
-  return (
-    <footer className="bg-primary text-primary-foreground pt-12 pb-6">
+  return <footer className="bg-primary text-primary-foreground pt-12 pb-6">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* About */}
@@ -19,7 +17,7 @@ export const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                <a className="text-primary-foreground/80 hover:text-primary-foreground transition-colors" href="/register">
                   New Registration
                 </a>
               </li>
@@ -126,6 +124,5 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
