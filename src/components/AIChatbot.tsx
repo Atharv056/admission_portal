@@ -150,7 +150,7 @@ export function AIChatbot() {
               <span className="absolute -top-1 -right-1 flex h-4 w-4">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-4 w-4 bg-secondary items-center justify-center">
-                  <Sparkles className="h-14 w-14 rounded-full  bg-primary hover:bg-primary/90 transition-all " />
+                  <Sparkles className="h-14 w-14 rounded-full bg-primary hover:bg-primary/90 transition-all " />
                 </span>
               </span>
             </Button>
