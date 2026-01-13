@@ -145,7 +145,7 @@ export function AIChatbot() {
         scale: 0,
         opacity: 0
       }} className="fixed bottom-6 right-6 z-50">
-            <Button onClick={() => setIsOpen(true)} size="lg" className="h-14 w-14 rounded-full bg-primary hover:bg-primary/90 transition-all" aria-label="Open AI Assistant">
+            <Button onClick={() => setIsOpen(true)} size="lg" className="h-13 w-13 rounded-full bg-primary hover:bg-primary/90 transition-all border-dashed" aria-label="Open AI Assistant">
               <MessageCircle className="h-6 w-6" />
               <span className="absolute -top-1 -right-1 flex h-4 w-4">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
