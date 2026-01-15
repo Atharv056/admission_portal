@@ -3,6 +3,7 @@ import { Menu, Bell, User, LogIn, LogOut, Shield } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,10 +51,12 @@ export const Header = () => {
                 className="text-sm font-medium text-foreground hover:text-primary transition-colors"
               >
                 {link.label}
-              </Link>)}
+              </Link>
+            ))}
           </nav>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <Button variant="outline" size="sm" className="hidden md:flex gap-2" asChild>
               <Link to="/admin-login">
                 <Shield className="h-4 w-4" />
@@ -136,9 +139,12 @@ export const Header = () => {
                     <LogIn className="h-4 w-4" />
                     Login
                   </Link>
-                </Button>}
+                </Button>
+              )}
             </nav>
-          </div>}
+          </div>
+        )}
       </div>
-    </header>;
+    </header>
+  );
 };
