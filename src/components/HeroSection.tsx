@@ -170,7 +170,7 @@ export const HeroSection = () => {
             rotate: [0, 90, 0]
           }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] rounded-full bg-primary/20 blur-[120px]"
+          className="absolute -top-[20%] -right-[10%] w-[500px] md:w-[800px] h-[500px] md:h-[800px] rounded-full bg-primary/20 blur-[80px] md:blur-[120px]"
         />
         <motion.div
           animate={{
@@ -179,23 +179,23 @@ export const HeroSection = () => {
             x: [0, -50, 0]
           }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[40%] -left-[20%] w-[600px] h-[600px] rounded-full bg-secondary/10 blur-[100px]"
+          className="absolute top-[40%] -left-[20%] w-[400px] md:w-[600px] h-[400px] md:h-[600px] rounded-full bg-secondary/10 blur-[60px] md:blur-[100px]"
         />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
       </div>
 
-      <div className="container px-4 md:px-6 relative z-10 w-full">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+      <div className="container px-4 md:px-6 relative z-10 w-full py-12 md:py-0">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-8 items-center">
 
           {/* Left Content */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="flex flex-col space-y-8 max-w-2xl"
+            className="flex flex-col space-y-6 md:space-y-8 max-w-2xl mx-auto lg:mx-0 text-center lg:text-left"
           >
-            <motion.div variants={itemVariants}>
-              <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-sm font-medium backdrop-blur-sm">
+            <motion.div variants={itemVariants} className="flex justify-center lg:justify-start">
+              <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs md:text-sm font-medium backdrop-blur-sm">
                 <span className="relative flex h-2 w-2 mr-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
@@ -204,21 +204,21 @@ export const HeroSection = () => {
               </span>
             </motion.div>
 
-            <motion.h1 variants={itemVariants} className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
+            <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
               Shape Your Future <br />
               <span className="text-gradient">With Excellence</span>
             </motion.h1>
 
-            <motion.p variants={itemVariants} className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-lg">
+            <motion.p variants={itemVariants} className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto lg:mx-0">
               The official portal for undergraduate and postgraduate admissions.
               Streamlined, secure, and paperless application process.
             </motion.p>
 
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button
                 size="lg"
                 onClick={handleNewRegistration}
-                className="h-12 px-8 text-base bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+                className="h-12 px-8 text-base bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
               >
                 Start Application <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -226,14 +226,14 @@ export const HeroSection = () => {
                 variant="outline"
                 size="lg"
                 onClick={handleCheckStatus}
-                className="h-12 px-8 text-base border-primary/20 hover:bg-primary/5 bg-transparent backdrop-blur-sm transition-all hover:scale-105 active:scale-95"
+                className="h-12 px-8 text-base border-primary/20 hover:bg-primary/5 bg-transparent backdrop-blur-sm transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
               >
                 <CheckCircle className="mr-2 h-4 w-4" /> Check Status
               </Button>
             </motion.div>
 
             {/* Stats */}
-            <motion.div variants={itemVariants} className="grid grid-cols-3 gap-6 pt-8 border-t border-border/50">
+            <motion.div variants={itemVariants} className="grid grid-cols-3 gap-4 md:gap-6 pt-8 border-t border-border/50">
               <StatItem number="50K+" label="Applicants" />
               <StatItem number="120+" label="Institutes" />
               <StatItem number="99%" label="Success Rate" />
@@ -245,22 +245,22 @@ export const HeroSection = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="relative hidden lg:block h-[600px]"
+            className="relative lg:block h-[400px] md:h-[600px] mt-8 lg:mt-0"
           >
             {/* Floating Elements Animation */}
             <motion.div
               animate={{ y: [0, -20, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-10 right-10 z-20"
+              className="absolute top-0 right-0 md:top-10 md:right-10 z-20"
             >
-              <GlassCard className="p-6 w-72 backdrop-blur-xl bg-white/10 dark:bg-black/20 border-white/20">
+              <GlassCard className="p-4 md:p-6 w-64 md:w-72 backdrop-blur-xl bg-white/10 dark:bg-black/20 border-white/20">
                 <div className="flex items-start gap-4">
                   <div className="p-3 rounded-lg bg-green-500/20 text-green-400">
                     <CheckCircle className="h-6 w-6" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Verified</h3>
-                    <p className="text-sm text-muted-foreground">Documents approved instantly</p>
+                    <h3 className="font-semibold text-base md:text-lg">Verified</h3>
+                    <p className="text-xs md:text-sm text-muted-foreground">Documents approved instantly</p>
                   </div>
                 </div>
               </GlassCard>
@@ -269,9 +269,9 @@ export const HeroSection = () => {
             <motion.div
               animate={{ y: [0, 20, 0] }}
               transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute bottom-20 left-10 z-30"
+              className="absolute bottom-10 left-0 md:bottom-20 md:left-10 z-30"
             >
-              <GlassCard className="p-6 w-80 backdrop-blur-xl bg-white/10 dark:bg-black/20 border-white/20">
+              <GlassCard className="p-4 md:p-6 w-72 md:w-80 backdrop-blur-xl bg-white/10 dark:bg-black/20 border-white/20">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-medium text-muted-foreground">Application Status</span>
@@ -295,7 +295,7 @@ export const HeroSection = () => {
 
             {/* Center Graphic */}
             <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-              <div className="relative w-[500px] h-[500px]">
+              <div className="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px]">
                 <div className="absolute inset-0 rounded-full border border-primary/10 animate-[spin_60s_linear_infinite]" />
                 <div className="absolute inset-10 rounded-full border border-dashed border-cyan-500/20 animate-[spin_40s_linear_infinite_reverse]" />
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-cyan-500/5 rounded-full blur-3xl" />
@@ -311,8 +311,8 @@ export const HeroSection = () => {
 
 const StatItem = ({ number, label }: { number: string; label: string }) => (
   <div>
-    <h4 className="text-3xl font-bold text-foreground tracking-tight">{number}</h4>
-    <p className="text-sm text-muted-foreground mt-1 font-medium text-primary/80">{label}</p>
+    <h4 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">{number}</h4>
+    <p className="text-xs md:text-sm text-muted-foreground mt-1 font-medium text-primary/80">{label}</p>
   </div>
 );
 
