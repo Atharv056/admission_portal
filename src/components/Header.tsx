@@ -180,7 +180,7 @@
 
 
 import { Button } from "@/components/ui/button";
-import { Menu, User, LogOut, ChevronRight, X } from "lucide-react";
+import { Menu, User, LogOut, ChevronRight, X, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -324,6 +324,40 @@ export const Header = () => {
               className="absolute top-full mt-2 w-[95%] max-w-md rounded-2xl bg-background/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden lg:hidden"
             >
               <nav className="flex flex-col p-4 gap-2 max-h-[70vh] overflow-y-auto">
+                {user && (
+                  <div className="flex items-center gap-3 p-3 mb-2 rounded-xl bg-muted/50">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary overflow-hidden">
+                      {user.user_metadata?.avatar_url ? (
+                        <img
+                          src={user.user_metadata.avatar_url}
+                          alt={user.user_metadata?.full_name || "User"}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <User className="h-5 w-5" />
+                      )}
+                    </div>
+                    <div className="flex flex-col overflow-hidden flex-1">
+                      <span className="text-sm font-semibold truncate">
+                        {user.user_metadata?.full_name || "User"}
+                      </span>
+                      <span className="text-xs text-muted-foreground truncate">
+                        {user.email}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full hover:bg-background"
+                      asChild
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Link to="/settings" aria-label="Settings">
+                        <Settings className="h-4 w-4 text-muted-foreground" />
+                      </Link>
+                    </Button>
+                  </div>
+                )}
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
