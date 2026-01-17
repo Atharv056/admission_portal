@@ -26,3 +26,9 @@ Here is how you would open it:
 Go to your browser's address bar.
 Add /admin-login to the end of your website's base URL.
 For example, if you are running the project locally, the full URL would be: http://localhost:5173/admin-login
+
+
+
+
+
+add this --->.   Add a "Sign Out" button to the bottom of the mobile menu for logged-in users.
